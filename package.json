@@ -1,0 +1,29 @@
+{
+  "name": "todo-app-vanilla-js",
+  "version": "1.0.0",
+  "description": "writes a todo app using pure JS",
+  "main": "index.html",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite --port 1234",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "vite": "^4.1.1"
+  },
+  "devDependencies": {
+    "@babel/core": "7.2.0",
+    "sass": "^1.58.0",
+    "typescript": "4.4.4"
+  },
+  "resolutions": {
+    "@babel/preset-env": "7.13.8"
+  },
+  "keywords": [
+    "todo",
+    "app",
+    "todo-app",
+    "vanilla",
+    "javascript"
+  ]
+}
