@@ -91,7 +91,7 @@ const TodoAppV2 = () => {
       renderTodoAppV2();
     }
   },100);
-  
+
   return Widget("div", {
     className: "todo-container",
     children: [
@@ -111,7 +111,6 @@ const TodoAppV2 = () => {
           Widget("button", {
             children: "Add new Todo",
             onclick: function() {
-              console.log("onclick");
               const newTodoInput = document.getElementById("todo-input");
               if (newTodoInput.value) {
                 todos = [...todos, { id: newTodoId, text: newTodoInput.value }];
@@ -127,8 +126,15 @@ const TodoAppV2 = () => {
         children: todos.map(todo => Widget("li", {
           children: [
             Widget("span", { children: todo.text }),
-            Widget("button", { children: "Delete"}),
-            Widget("button", { children: "Edit"})
+            Widget("button", {
+              children: "Delete",
+              onclick: () => {
+                  todos = todos.filter(td => td.id !== todo.id);
+              }
+            }),
+            Widget("button", {
+              children: "Edit"
+            })
           ]
         }))
       })
