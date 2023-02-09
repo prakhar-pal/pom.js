@@ -1,3 +1,30 @@
+import { Widget } from "./lib";
+
+export function TodoV2 ({ todo, updateTodo, handleDeleteTodo, onEditToggle }) {
+    const el = todo.isEdit ? Widget("input", {
+        value: todo.text
+    }): Widget("span", { children: todo.text });
+    return Widget("li", {
+        children: [
+            el,
+            Widget("button", {
+                children: "Delete",
+                onclick: () => handleDeleteTodo(todo.id)
+            }),
+            Widget("button", {
+                children: todo.isEdit ? "Update": "Edit",
+                onclick: () => {
+                    if(todo.isEdit) {
+                        updateTodo(todo.id, el.value);
+                    }else {
+                        onEditToggle(todo.id);
+                    }
+                }
+            })
+        ]
+    });
+}
+
 const Todo = ({ todo, updateTodo, handleDeleteTodo, onEditToggle }) => {
     const todoEl = document.createElement("li");
 
@@ -33,4 +60,5 @@ const Todo = ({ todo, updateTodo, handleDeleteTodo, onEditToggle }) => {
     
     return todoEl;
 }
+
 export default Todo;

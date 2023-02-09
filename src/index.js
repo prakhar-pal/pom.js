@@ -1,5 +1,5 @@
 import "./styles.scss";
-import Todo from "./Todo";
+import Todo, { TodoV2 } from "./Todo";
 import { clearChildren, render, Widget } from "./lib";
 
 
@@ -85,12 +85,33 @@ let todos = [{ id: 1, text: "Todo 1", isEdit: false }];
 const TodoAppV2 = () => {
 
   let previousTodos = todos;
+
   setInterval(() => {
     if(todos !== previousTodos) {
       previousTodos = todos;
       renderTodoAppV2();
     }
   },100);
+
+  const updateTodo = (id, value) => {
+    const todo = todos.find((todo) => todo.id === id);
+    if (todo) {
+      todo.text = value;
+      todo.isEdit = false;
+      todos = [...todos];
+    }
+  }
+
+  const onEditToggle = (id) => {
+    todos = todos.map((_todo) => ({
+      ..._todo,
+      isEdit: _todo.id === id
+    }));
+  }
+
+  const handleDeleteTodo = id => {
+    todos = todos.filter(todo => todo.id !== id); 
+  }
 
   return Widget("div", {
     className: "todo-container",
@@ -123,20 +144,7 @@ const TodoAppV2 = () => {
         ]
       }),
       Widget("ul", {
-        children: todos.map(todo => Widget("li", {
-          children: [
-            Widget("span", { children: todo.text }),
-            Widget("button", {
-              children: "Delete",
-              onclick: () => {
-                  todos = todos.filter(td => td.id !== todo.id);
-              }
-            }),
-            Widget("button", {
-              children: "Edit"
-            })
-          ]
-        }))
+        children: todos.map(todo => TodoV2({ todo, updateTodo, handleDeleteTodo, onEditToggle }))
       })
     ]
   });
