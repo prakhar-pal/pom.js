@@ -34,7 +34,7 @@ interface IWidgetProps extends GenericObject {
  * @param {Object} props - props for the widget 
  * @returns {HTMLElement}
  */
-export function Widget(type: string, props: IWidgetProps): HTMLElement {
+export function Widget(type: keyof HTMLElementTagNameMap, props: IWidgetProps): HTMLElement {
     // if(type === "String") {
         const el = document.createElement(type);
         const { children, className, id, ...restProps } = props;

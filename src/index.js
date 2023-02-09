@@ -79,8 +79,18 @@ class TodosApp {
   newTodoSubmit.onclick = todoApp.addTodo;
 })();
 
-const App = () => {
-  let todos = [{ id: 1, text: "Todo 1", isEdit: false }];
+
+let todos = [{ id: 1, text: "Todo 1", isEdit: false }];
+
+const TodoAppV2 = () => {
+  
+  let previousTodos = todos;
+  setInterval(() => {
+    if(todos !== previousTodos) {
+      previousTodos = todos;
+      renderTodoAppV2();
+    }
+  },100);
   return Widget("div", {
     className: "todo-container",
     children: [
@@ -125,4 +135,8 @@ const App = () => {
   });
 }
 
-render(App(), document.getElementById("app-2"))
+function renderTodoAppV2(){
+  render(TodoAppV2(), document.getElementById("app-2"));
+}
+
+renderTodoAppV2();
