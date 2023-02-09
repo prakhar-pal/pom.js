@@ -34,7 +34,7 @@ interface IWidgetProps extends GenericObject {
  * @param {Object} props - props for the widget
  * @returns {HTMLElement}
  */
-export function Widget(type: keyof HTMLElementTagNameMap, props: IWidgetProps): HTMLElement {
+export function Widget(type: keyof HTMLElementTagNameMap, props: IWidgetProps = {}): HTMLElement {
     const el = document.createElement(type);
     const { children, className, id, ...restProps } = props;
     if(typeof children === "string"){
@@ -47,7 +47,9 @@ export function Widget(type: keyof HTMLElementTagNameMap, props: IWidgetProps): 
     if(className) {
         el.className = className;
     }
-    el.id = id || new Date().getTime().toString();
+    if(id) {
+        el.id = id;
+    }
     for(let [key, value] of Object.entries(restProps)){
         el[key] = value;
     }
