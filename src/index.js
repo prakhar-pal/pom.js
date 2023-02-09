@@ -1,15 +1,7 @@
-import "./styles.css";
+import "./styles.scss";
 import Todo from "./Todo";
+import { clearChildren, render, Widget } from "./lib";
 
-/**
- * @method clearBox - to remove all the children of element
- * @param {HTMLElement} element 
- */
-function clearBox(element) {
-  while (element.firstChild) {
-    element.removeChild(element.firstChild);
-  }
-}
 
 /**
  * 1. Add todo
@@ -31,7 +23,7 @@ class TodosApp {
   constructor() {
     let previousTodos = this.todos;
     setInterval(() => {
-      if(previousTodos !== this.todos) {
+      if (previousTodos !== this.todos) {
         this.renderTodos();
       }
       previousTodos = this.todos;
@@ -67,7 +59,7 @@ class TodosApp {
   }
 
   renderTodos = () => {
-    clearBox(todoListContainer);
+    clearChildren(todoListContainer);
     const { handleDeleteTodo, onEditToggle, updateTodo } = this;
     this.todos.forEach((todo) => {
       todoListContainer.appendChild(Todo({ todo, handleDeleteTodo, onEditToggle, updateTodo }));
@@ -86,3 +78,51 @@ class TodosApp {
   todoApp.renderTodos();
   newTodoSubmit.onclick = todoApp.addTodo;
 })();
+
+const App = () => {
+  let todos = [{ id: 1, text: "Todo 1", isEdit: false }];
+  return Widget("div", {
+    className: "todo-container",
+    children: [
+      Widget("h3", {
+        children: "Todo App2"
+      }),
+      Widget("div", {
+        className: "todo-form",
+        children: [
+          Widget("input", {
+            id: "todo-input",
+            autoComplete: "off",
+            style: {
+              listStyleType: "none"
+            },
+          }),
+          Widget("button", {
+            children: "Add new Todo",
+            onclick: function() {
+              console.log("onclick");
+              const newTodoInput = document.getElementById("todo-input");
+              if (newTodoInput.value) {
+                todos = [...todos, { id: newTodoId, text: newTodoInput.value }];
+                newTodoId++;
+                console.log("new todos are:", todos);
+              }
+              newTodoInput.value = "";
+            }
+          })
+        ]
+      }),
+      Widget("ul", {
+        children: todos.map(todo => Widget("li", {
+          children: [
+            Widget("span", { children: todo.text }),
+            Widget("button", { children: "Delete"}),
+            Widget("button", { children: "Edit"})
+          ]
+        }))
+      })
+    ]
+  });
+}
+
+render(App(), document.getElementById("app-2"))

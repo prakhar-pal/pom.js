@@ -1,0 +1,13 @@
+body {
+  font-family: sans-serif;
+  background-color: rgb(0,0,0,0.1);
+}
+
+.todo-container {
+  .todo-form {
+    display: flex;
+    input {
+      margin-right: 1rem;
+    }
+  }
+}
