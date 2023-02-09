@@ -71,7 +71,7 @@ const TodoAppV2 = () => {
           })
         ]
       }),
-      Widget("ul", {
+      Widget("ol", {
         children: todos.map(todo => Todo({ todo, updateTodo, handleDeleteTodo, onEditToggle }))
       })
     ]
