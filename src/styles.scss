@@ -12,6 +12,15 @@ body {
       margin-right: 1rem;
     }
   }
+
+  ol > li {
+    padding: 0.5rem 1rem;
+    transition: all 500ms;
+    &.active {
+      background-color: black;
+      color: white;
+    }
+  }
   ol > li > * {
     margin-right: 0.5rem;
   }

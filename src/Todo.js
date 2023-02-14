@@ -17,7 +17,11 @@ export function Todo ({ todo, updateTodo, handleDeleteTodo, onEditToggle }) {
             }
         }
     }): Widget("span", { children: todo.text });
-    return Widget("li", {
+
+    const w = Widget("li", {
+        onclick: () => {
+            w.classList.toggle("active");
+        },
         children: [
             el,
             Widget("button", {
@@ -36,6 +40,7 @@ export function Todo ({ todo, updateTodo, handleDeleteTodo, onEditToggle }) {
             })
         ]
     });
+    return w;
 }
 
 export default Todo;
