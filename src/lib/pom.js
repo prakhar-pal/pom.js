@@ -31,7 +31,6 @@ export function render(component, target) {
             }else {
                 // remove previous DOM Nodes
                 for(let [type, props] of (prevDOM ? Object.entries(prevDOM) : [])){
-                    console.log({ type, props });
                     target.removeChild(props.el);
                 }
                 let parentEl = target;
@@ -51,14 +50,12 @@ export function render(component, target) {
 
     const doIt = () => {
         oldDOM = doRender(component, target, oldDOM);
-        console.log("new DOM:", oldDOM);
     }
     seBus.addEventListener(doIt);
     doIt();
 }
 
 const stateUpdated = () => {
-    console.log("state has been updated");
     seBus.triggerStateChange();
 };
 
@@ -81,7 +78,7 @@ function updateAttrs(element, attrs){
         element.innerHTML = children;
     }else if(children && Array.isArray(children)){
         children?.forEach(child => {
-            element.appendChild(createElement(child));
+            element.appendChild(createElement(child.type, child.props));
         });
     }
     for(let [key, value] of Object.entries(restProps)){
