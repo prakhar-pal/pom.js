@@ -21,13 +21,6 @@ export function render(Component: HTMLElement, target: HTMLElement) {
     target.appendChild(Component);
 }
 
-type GenericObject = {
-    [key: string]: any;
-};
-interface IWidgetProps extends GenericObject {
-    children?: String | HTMLElement[];
-    className?: string;
-}
 /**
  *
  * @param {String} type - type of widget
@@ -43,12 +36,6 @@ export function Widget(type: keyof HTMLElementTagNameMap, props: IWidgetProps = 
         children?.forEach(child => {
             el.appendChild(child);
         });
-    }
-    if(className) {
-        el.className = className;
-    }
-    if(id) {
-        el.id = id;
     }
     for(let [key, value] of Object.entries(restProps)){
         el[key] = value;
