@@ -15,12 +15,13 @@ const TodoAppV2 = () => {
 
   let previousTodos = todos;
 
+  // react to todo changes
   setInterval(() => {
     if(todos !== previousTodos) {
       previousTodos = todos;
       renderTodoAppV2();
     }
-  },100);
+  },0);
 
   const updateTodo = (id, value) => {
     const todo = todos.find((todo) => todo.id === id);
@@ -78,8 +79,8 @@ const TodoAppV2 = () => {
   });
 }
 
-function renderTodoAppV2(){
+function renderTodoApp(){
   render(TodoAppV2(), document.getElementById("app"));
 }
 
-renderTodoAppV2();
+renderTodoApp();
