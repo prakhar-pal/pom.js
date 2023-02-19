@@ -11,45 +11,56 @@ class StateEventBus {
 const seBus = new StateEventBus();
 
 export function Widget(type, props = {}) {
-    const {key = null, ...restProps} = props;
-    return { type, props: restProps, key };
+    const { key = null, ...restProps } = props;
+    return { type, props: restProps, key: key || type };
 }
 
-export function render(component, target) {
-    let oldDOM = null;
-    function doRender(component, target, prevDOM) {
-        let newDOM = null;
+
+const isVDOMObj = (obj) => Array.isArray(obj) && obj.every(o => !!o.type);
+
+export function render(element, target) {
+    let oldDOM = [];
+    function doRenderLoop(component, target, prevDOM) {
+        let newDOM = [];
         if(typeof component === "string") {
             newDOM = component;
             target.innerHTML = component;
         }else if(component instanceof Component) {
             let result = component.render();
-            return doRender(result, target, prevDOM);
-        }else if(component.type && component.props) {
-            if(prevDOM && prevDOM[component.key]) {
-                updateAttrs(prevDOM[component.key], component.props);
-            }else {
-                // remove previous DOM Nodes
-                for(let [type, props] of (prevDOM ? Object.entries(prevDOM) : [])){
-                    target.removeChild(props.el);
+            if(result.type) result = [result];
+            return doRenderLoop(result, target, prevDOM);
+        }else if(isVDOMObj(component)) {
+            component.forEach((componentInstance, index) => {
+                const addElement = (instance, index) => {
+                    const el = createElement(instance.type, instance.props);
+                    target.appendChild(el);
+                    let children =  instance.props?.children ? doRenderLoop(instance.props?.children, el, prevDOM?.[index]?.children || []): null;
+                    newDOM[index] = {...componentInstance, children, el };
+                    return el;
                 }
-                let parentEl = target;
-                if(component.type){
-                    parentEl = createElement(component.type, component.props);
-                    target.appendChild(parentEl);
+                if(prevDOM && prevDOM[index]) {
+                    const oldComponentInstance = prevDOM[index];
+                    if(oldComponentInstance.key === componentInstance.key){
+                        updateAttrs(prevDOM[index].el, componentInstance.props);
+                        const el = prevDOM[index].el;
+                        let children = componentInstance.props?.children ? doRenderLoop(componentInstance.props?.children, el, prevDOM?.[index]?.children || []) : null;
+                        newDOM[index] = {...componentInstance, children, el };
+                    }else {
+                        console.log("removing:", oldComponentInstance.el);
+                        target.removeChild(oldComponentInstance.el);
+                        addElement(componentInstance, index);
+                    }
+                }else {
+                    addElement(componentInstance, index);
                 }
-                newDOM = Object.assign({}, newDOM, { [component.type]: {
-                    ...component,
-                    el: parentEl
-                }});
-                return newDOM;
-            }
+            });
         }
         return newDOM;
     }
 
     const doIt = () => {
-        oldDOM = doRender(component, target, oldDOM);
+        const newDOM = doRenderLoop(element, target, oldDOM);
+        oldDOM = newDOM;
     }
     seBus.addEventListener(doIt);
     doIt();
@@ -73,13 +84,9 @@ export function createElement(type, props = {}) {
 }
 
 function updateAttrs(element, attrs){
-    const { children, className, id, ...restProps } = attrs;
+    const { children, ...restProps } = attrs;
     if(typeof children === "string"){
         element.innerHTML = children;
-    }else if(children && Array.isArray(children)){
-        children?.forEach(child => {
-            element.appendChild(createElement(child.type, child.props));
-        });
     }
     for(let [key, value] of Object.entries(restProps)){
         element[key] = value;

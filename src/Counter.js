@@ -1,13 +1,8 @@
 import { Component, render, Widget } from "./lib/pom";
 
 class Counter extends Component {
+
     state = { counter: 0 }
-    constructor() {
-        super();
-        setInterval(() => {
-            // this.setState(state => ({...state, counter: state.counter+1 }));
-        }, 1000);
-    }
 
     handleCounterChange = value => this.setState(state => ({...state, counter: state.counter + value}));
     handleIncrement = () => this.handleCounterChange(1);
