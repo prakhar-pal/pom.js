@@ -1,20 +1,20 @@
-type ITagName = keyof HTMLElementTagNameMap;
+import { Component } from "./pom";
+type ITagName = string;
 
-type IMemDOM = null | {
-    key?: string | number ;
+type IMemDOM = null | GenericObject & {
+    key: string | number ;
     type: ITagName;
     props: any;
-    el: HTMLElement;
+    el?: HTMLElement;
 }
-
 
 type GenericObject = {
     [key: string]: any;
 };
-
 
 interface IWidgetProps extends GenericObject {
     children?: string | HTMLElement[];
     className?: string;
 }
 
+type IPomElement = IMemDOM | IMemDOM[];
