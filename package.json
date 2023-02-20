@@ -1,8 +1,8 @@
 {
-  "name": "todo-app-vanilla-js",
+  "name": "pom.js",
   "version": "1.0.0",
-  "description": "writes a todo app using pure JS",
-  "main": "index.html",
+  "description": "A small javascript library to write declarative web UI",
+  "main": "src/lib/pom.js",
   "license": "MIT",
   "scripts": {
     "dev": "vite --port 1234",
@@ -20,9 +20,11 @@
     "@babel/preset-env": "7.13.8"
   },
   "keywords": [
-    "todo",
-    "app",
-    "todo-app",
+    "javascript",
+    "declarative",
+    "UI",
+    "pom",
+    "pom.js",
     "vanilla",
     "javascript"
   ]

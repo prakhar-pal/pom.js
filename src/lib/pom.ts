@@ -73,7 +73,6 @@ export function render(element: IPomElement[], target: HTMLElement) {
     }
     stateEventBus.addChangeHandler(updateVDOM);
     stateEventBus.stateUpdated();
-    // updateVDOM();
 }
 
 const stateUpdated = () => {

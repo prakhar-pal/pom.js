@@ -1,4 +1,3 @@
-import { Component } from "./pom";
 type ITagName = string;
 
 type IMemDOM = null | GenericObject & {

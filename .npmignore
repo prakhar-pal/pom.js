@@ -1,0 +1,5 @@
+dist
+*.html
+*.css
+*.scss
+*.js
