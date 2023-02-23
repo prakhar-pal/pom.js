@@ -25,47 +25,49 @@ const isVDOMObj = (obj: IPomElement[]) =>
     obj && Array.isArray(obj) &&
     obj.every(o => o && (typeof o === "string" || (o as GenericObject).type)); // @todo - remove as
 
-export function render(element: IPomElement[], target: HTMLElement) {
-    let oldDOM: IMemDOM[] = [];
-    function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IMemDOM[]) {
-        let newDOM: IMemDOM[] = [];
-        if (component instanceof Component) {
-            let _result = component.render();
-            let result: IMemDOM[] = [];
-            if (!_result) return [];
-            else if (!Array.isArray(_result) && typeof _result !== "string") result = [_result];
-            return doRenderLoop(result, target, prevDOM);
-        } else if (component && isVDOMObj(component as IMemDOM[])) { // @todo - remove as
-            (component as IMemDOM[]).forEach((componentInstance, index) => { // @todo - remove as
-                const addElement = (instance, index) => {
-                    const el = createElement(instance.type, instance.props);
-                    target.appendChild(el);
-                    let children = instance.props?.children ? doRenderLoop(instance.props?.children, el, prevDOM?.[index]?.children || []) : null;
-                    newDOM[index] = { ...componentInstance, children, el } as IMemDOM; // @todo - remove as
-                    return el;
-                }
-                if (prevDOM && prevDOM[index]) {
-                    const oldComponentInstance = prevDOM[index];
-                    if (oldComponentInstance && componentInstance && oldComponentInstance.key === componentInstance.key) {
-                        if(prevDOM[index]?.el){
-                            updateAttrs(prevDOM?.[index]?.el, componentInstance.props);
-                        } 
-                        const el = prevDOM[index]?.el;
-                        let children = componentInstance.props?.children && el ? doRenderLoop(componentInstance.props?.children, el, prevDOM?.[index]?.children || []) : null;
-                        newDOM[index] = { ...componentInstance, children, el };
-                    } else {
-                        if(oldComponentInstance?.el) {
-                            target.removeChild(oldComponentInstance.el);
-                        }
-                        addElement(componentInstance, index);
-                    }
+function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IMemDOM[]) {
+    let newDOM: IMemDOM[] = [];
+    if (component instanceof Component) {
+        let _result = component.render();
+        let result: IMemDOM[] = [];
+        if (!_result) return [];
+        else if (!Array.isArray(_result) && typeof _result !== "string") result = [_result];
+        return doRenderLoop(result, target, prevDOM);
+    } else if (component && isVDOMObj(component as IMemDOM[])) { // @todo - remove as
+        (component as IMemDOM[]).forEach((componentInstance, index) => { // @todo - remove as
+            const addElement = (instance, index) => {
+                const el = createElement(instance.type, instance.props);
+                target.appendChild(el);
+                let children = instance.props?.children ? doRenderLoop(instance.props?.children, el, prevDOM?.[index]?.children || []) : null;
+                newDOM[index] = { ...componentInstance, children, el } as IMemDOM; // @todo - remove as
+                return el;
+            }
+            if (prevDOM && prevDOM[index]) {
+                const oldComponentInstance = prevDOM[index];
+                if (oldComponentInstance && componentInstance && oldComponentInstance.key === componentInstance.key) {
+                    if(prevDOM[index]?.el){
+                        updateAttrs(prevDOM?.[index]?.el, componentInstance.props);
+                    } 
+                    const el = prevDOM[index]?.el;
+                    let children = componentInstance.props?.children && el ? doRenderLoop(componentInstance.props?.children, el, prevDOM?.[index]?.children || []) : null;
+                    newDOM[index] = { ...componentInstance, children, el };
                 } else {
+                    if(oldComponentInstance?.el) {
+                        target.removeChild(oldComponentInstance.el);
+                    }
                     addElement(componentInstance, index);
                 }
-            });
-        }
-        return newDOM;
+            } else {
+                addElement(componentInstance, index);
+            }
+        });
     }
+    return newDOM;
+}
+
+export function render(element: IPomElement[], target: HTMLElement) {
+    let oldDOM: IMemDOM[] = [];
+   
 
     const updateVDOM = () => {
         const newDOM = doRenderLoop(element, target, oldDOM);
