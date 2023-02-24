@@ -1,12 +1,12 @@
 {
   "name": "@lawki/pom.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A small javascript library to write declarative web UI",
-  "main": "src/lib/pom.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
     "dev": "vite --port 1234",
-    "build": "vite build"
+    "build": "tsc --project tsconfig.json"
   },
   "dependencies": {
     "lodash.isequal": "^4.5.0",
@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.2.0",
+    "@types/lodash.isequal": "^4.5.6",
     "sass": "^1.58.0",
     "typescript": "4.4.4"
   },

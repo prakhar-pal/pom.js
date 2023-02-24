@@ -1,0 +1,11 @@
+{
+    "files": [
+        "src/lib/pom.ts"
+    ],
+    "compilerOptions": {
+        "lib": ["es2021", "dom"],
+        "outFile": "./dist/index.js",
+        "module": "System",
+        "declaration": true
+    },
+}
