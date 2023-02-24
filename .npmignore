@@ -2,4 +2,4 @@ dist
 *.html
 *.css
 *.scss
-*.js
+src
