@@ -3,3 +3,5 @@ dist
 *.css
 *.scss
 src
+todo-app
+lib
