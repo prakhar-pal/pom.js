@@ -1,4 +1,4 @@
-import { Component, render, Widget } from "../../src/lib/pom";
+import { Component, render, Widget } from "@lawki/pom.js";
 
 class Counter extends Component {
 

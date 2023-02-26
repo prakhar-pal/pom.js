@@ -1,15 +1,10 @@
 {
-    "files": [
-        "lib/pom.ts"
-    ],
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
         "lib": [ "es2021", "dom" ],
         "outDir": "./dist",
-        "module": "CommonJS",
+        "module": "UMD",
+        "noImplicitAny": true,
         "declaration": true,
     },
-    "include": [
-        "lodash.isequal"
-    ]
 }
