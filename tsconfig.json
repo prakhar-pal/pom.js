@@ -1,6 +1,6 @@
 {
     "files": [
-        "src/lib/pom.ts"
+        "lib/pom.ts"
     ],
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
