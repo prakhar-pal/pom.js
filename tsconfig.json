@@ -3,9 +3,13 @@
         "src/lib/pom.ts"
     ],
     "compilerOptions": {
-        "lib": ["es2021", "dom"],
-        "outFile": "./dist/index.js",
-        "module": "System",
-        "declaration": true
+        "allowSyntheticDefaultImports": true,
+        "lib": [ "es2021", "dom" ],
+        "outDir": "./dist",
+        "module": "CommonJS",
+        "declaration": true,
     },
+    "include": [
+        "lodash.isequal"
+    ]
 }
