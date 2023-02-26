@@ -27,17 +27,17 @@ const isVDOMObj = (obj: IPomElement[]) =>
     obj && Array.isArray(obj) &&
     obj.every(o => o && (typeof o === "string" || (o as GenericObject).type)); // @todo - remove as
 
-function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IMemDOM[]) {
+function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IMemDOM[]): IMemDOM[] {
     let newDOM: IMemDOM[] = [];
     if (component instanceof Component) {
         let _result = component.render();
         let result: IMemDOM[] = [];
-        if (!_result) return [];
+        if (!_result) return null;
         else if (!Array.isArray(_result) && typeof _result !== "string") result = [_result];
         return doRenderLoop(result, target, prevDOM);
     } else if (component && isVDOMObj(component as IMemDOM[])) { // @todo - remove as
         (component as IMemDOM[]).forEach((componentInstance, index) => { // @todo - remove as
-            const addElement = (instance, index) => {
+            const addElement = (instance: IMemDOM, index: number) => {
                 const el = createElement(instance.type, instance.props);
                 target.appendChild(el);
                 let children = instance.props?.children ? doRenderLoop(instance.props?.children, el, prevDOM?.[index]?.children || []) : null;
@@ -47,7 +47,7 @@ function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IM
             if (prevDOM && prevDOM[index]) {
                 const oldComponentInstance = prevDOM[index];
                 if (oldComponentInstance && componentInstance && oldComponentInstance.key === componentInstance.key) {
-                    if(prevDOM[index]?.el && !isEqual(prevDOM[index].props, componentInstance.props)){
+                    if(prevDOM[index]?.el){
                         updateAttrs(prevDOM?.[index]?.el, componentInstance.props);
                     } 
                     const el = prevDOM[index]?.el;
@@ -103,6 +103,7 @@ function updateAttrs(element?: HTMLElement, attrs?: GenericObject) {
         element.innerHTML = children;
     }
     for (let [key, value] of Object.entries(restProps)) {
+        // @ts-ignore
         element[key] = value;
     }
 }
