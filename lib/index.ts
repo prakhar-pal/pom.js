@@ -1,3 +1,4 @@
+import { IWidgetProps } from "./types";
 /**
  * @method clearChildren - to remove all the children of element
  * @param {HTMLElement} element
@@ -38,6 +39,7 @@ export function Widget(type: keyof HTMLElementTagNameMap, props: IWidgetProps = 
         });
     }
     for(let [key, value] of Object.entries(restProps)){
+        // @ts-ignore
         el[key] = value;
     }
     return el;
