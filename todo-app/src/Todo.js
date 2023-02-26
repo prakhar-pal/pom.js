@@ -1,4 +1,4 @@
-import { Widget } from "./lib";
+import { Widget } from "@lawki/pom.js";
 
 /**
  * Features of Todo component

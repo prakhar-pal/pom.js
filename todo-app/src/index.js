@@ -1,6 +1,6 @@
 import "./styles.scss";
 import Todo from "./Todo";
-import { render, Widget } from "./lib";
+import { render, Widget } from "@lawki/pom.js";
 
 
 /**
@@ -80,7 +80,11 @@ const TodoAppV2 = () => {
 }
 
 function renderTodoApp(){
-  render(TodoAppV2(), document.getElementById("app"));
+  const app = TodoAppV2();
+  const el = document.getElementById("app");
+  console.log({ app, el})
+  render(app, el);
 }
+
 
 renderTodoApp();

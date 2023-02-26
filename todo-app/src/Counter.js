@@ -1,4 +1,4 @@
-import { Component, render, Widget } from "./lib/pom";
+import { Component, render, Widget } from "../../src/lib/pom";
 
 class Counter extends Component {
 
