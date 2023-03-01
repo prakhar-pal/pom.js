@@ -2,8 +2,7 @@
     "compilerOptions": {
         "allowSyntheticDefaultImports": true,
         "lib": [ "es2021", "dom" ],
-        "outDir": "./dist",
-        "module": "UMD",
+        "module": "CommonJS",
         "noImplicitAny": true,
         "declaration": true,
     },

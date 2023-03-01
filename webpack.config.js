@@ -4,13 +4,17 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 module.exports = {
     mode: 'production',
     entry: {
-      pom: path.join(__dirname, 'lib', 'pom.ts'),
-      vendor: ['lodash.isequal']
+      pom: path.join(__dirname, 'lib'),
+      equalDemo: path.join(__dirname, 'equal-demo.ts')
     },
     output: {
+        globalObject: 'this',
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
         libraryTarget: 'umd'
+    },
+    resolve: {
+      extensions: ['.ts', '.js']
     },
     module: {
         rules: [

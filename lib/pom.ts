@@ -47,7 +47,7 @@ function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IM
             if (prevDOM && prevDOM[index]) {
                 const oldComponentInstance = prevDOM[index];
                 if (oldComponentInstance && componentInstance && oldComponentInstance.key === componentInstance.key) {
-                    if(prevDOM[index]?.el){
+                    if(prevDOM[index]?.el && !isEqual(prevDOM[index].props, componentInstance.props)){
                         updateAttrs(prevDOM?.[index]?.el, componentInstance.props);
                     } 
                     const el = prevDOM[index]?.el;
