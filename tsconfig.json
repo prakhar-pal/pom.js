@@ -3,7 +3,7 @@
         "allowSyntheticDefaultImports": true,
         "lib": [ "es2021", "dom" ],
         "outDir": "./dist",
-        "module": "UMD",
+        "module": "ES2015",
         "noImplicitAny": true,
         "declaration": true,
     },
