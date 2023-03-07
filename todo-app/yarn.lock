@@ -113,9 +113,7 @@
   integrity sha512-y+EHuSchhL7FjHgvQL/0fnnFmO4T1bhvWANX6gcnqTjtnKWbTvUMCpGnv2+t+31d7RzyEAYAd4u2fnIhHL6N/Q==
 
 "@lawki/pom.js@../":
-  version "1.0.1"
-  dependencies:
-    lodash.isequal "^4.5.0"
+  version "1.0.2"
 
 anymatch@~3.1.2:
   version "3.1.3"

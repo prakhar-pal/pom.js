@@ -65,7 +65,6 @@ const TodoAppV2 = () => {
               if (newTodoInput.value) {
                 todos = [...todos, { id: newTodoId, text: newTodoInput.value }];
                 newTodoId++;
-                console.log("new todos are:", todos);
               }
               newTodoInput.value = "";
             }
@@ -82,7 +81,6 @@ const TodoAppV2 = () => {
 function renderTodoApp(){
   const app = TodoAppV2();
   const el = document.getElementById("app");
-  console.log({ app, el})
   render(app, el);
 }
 
