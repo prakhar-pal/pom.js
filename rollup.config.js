@@ -15,5 +15,8 @@ export default defineConfig({
 		nodeResolve(),
 		typescript(),
 		terser()
+	],
+	external: [
+		'lodash.isequal'
 	]
 });
