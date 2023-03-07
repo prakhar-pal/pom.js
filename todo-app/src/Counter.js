@@ -2,14 +2,22 @@ import { Component, render, Widget } from "@lawki/pom.js";
 
 class Counter extends Component {
 
-    state = { counter: 0, dates: [] }
+    state = { counter: 0, counterHistory: [] }
 
-    handleCounterChange = value => this.setState(state => ({...state, counter: state.counter + value}));
+    handleCounterChange = value => this.setState(state => {
+        const newCounter = state.counter + value;
+        return {...state, counter: newCounter, counterHistory: [...state.counterHistory, newCounter]};
+    });
     handleIncrement = () => this.handleCounterChange(1);
     handleDecrement = () => this.handleCounterChange(-1);
     handleAddDate = () => this.setState(state => ({...state, dates: [...state.dates,(new Date())] }));
+    deleteDate = index => this.setState(state => {
+        state.counterHistory.splice(index, 1);
+        return { ...state, counterHistory: [...state.counterHistory] };
+    })
     render = () => {
-        const { counter, dates } = this.state;
+        const { counter, counterHistory } = this.state;
+
         return Widget("div", {
             className: "counter-app-container",
             children: [
@@ -30,14 +38,16 @@ class Counter extends Component {
                 }),
                 Widget("div", {
                     children: [
-                        Widget("h1", { innerHTML: "Dates List" }),
-                        Widget("button", {
-                            innerHTML: "Add Dates",
-                            onclick: this.handleAddDate
-                        }),
-                        Widget("ul", {
-                            children: dates.map((date, index) => Widget("li", { innerHTML: date, key: index }))
-                        })
+                        Widget("h1", { innerHTML: "Counter History" }),
+                        counterHistory.length > 0 ? Widget("ul", {
+                            children: counterHistory.map((counter, index) => Widget("li", {
+                                key: counter,
+                                children: [
+                                    Widget("span", { innerHTML: counter }),
+                                    Widget("button", { innerHTML: 'delete', onclick: () => this.deleteDate(index)})
+                                ]
+                            }))
+                        }): Widget("div", { innerHTML: "No Recent changes!"})
                     ]
                 })
             ]
