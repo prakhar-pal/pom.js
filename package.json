@@ -1,6 +1,6 @@
 {
   "name": "@lawki/pom.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A small javascript library to write declarative web UI",
   "main": "dist/pom.js",
   "license": "MIT",
