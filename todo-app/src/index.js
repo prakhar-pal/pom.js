@@ -1,6 +1,6 @@
 import "./styles.scss";
 import Todo from "./Todo";
-import { render, Widget } from "@lawki/pom.js";
+import { Component, render, Widget } from "@lawki/pom.js";
 
 
 /**
@@ -9,80 +9,87 @@ import { render, Widget } from "@lawki/pom.js";
  * 3. Delete todo
  */
 let newTodoId = 2;
-let todos = [{ id: 1, text: "Todo 1", isEdit: false }];
+const initiailTodos = [{ id: 1, text: "Todo 1", isEdit: false }];
 
-const TodoAppV2 = () => {
+class TodoAppV2 extends Component{
 
-  let previousTodos = todos;
+  state = { todos: initiailTodos };
 
-  // react to todo changes
-  setInterval(() => {
-    if(todos !== previousTodos) {
-      previousTodos = todos;
-      renderTodoAppV2();
-    }
-  },0);
-
-  const updateTodo = (id, value) => {
+  updateTodo = (id, value) => {
+    const { todos } = this.state;
     const todo = todos.find((todo) => todo.id === id);
     if (todo) {
       todo.text = value;
       todo.isEdit = false;
-      todos = [...todos];
+      const newTodos = [...todos];
+      this.setState(() => ({ todos: newTodos }));
     }
   }
 
-  const onEditToggle = (id) => {
-    todos = todos.map((_todo) => ({
+  onEditToggle = (id) => {
+    const { todos } = this.state;
+    let newTodos = todos.map((_todo) => ({
       ..._todo,
       isEdit: _todo.id === id
     }));
+    this.setState(() => ({ todos: newTodos }));
   }
 
-  const handleDeleteTodo = id => {
-    todos = todos.filter(todo => todo.id !== id); 
+  handleDeleteTodo = id => {
+    const { todos } = this.state;
+    let newTodos = todos.filter(todo => todo.id !== id); 
+    this.setState(() => ({ todos: newTodos }));
   }
 
-  return Widget("div", {
-    className: "todo-container",
-    children: [
-      Widget("h3", {
-        children: "Todo App"
-      }),
-      Widget("small", { children: "Manage Your Todos :)"}),
-      Widget("hr"),
-      Widget("div", {
-        className: "todo-form",
-        children: [
-          Widget("input", {
-            id: "todo-input",
-            autoComplete: "off",
-          }),
-          Widget("button", {
-            children: "Add new Todo",
-            onclick: function() {
-              const newTodoInput = document.getElementById("todo-input");
-              if (newTodoInput.value) {
-                todos = [...todos, { id: newTodoId, text: newTodoInput.value }];
-                newTodoId++;
-              }
-              newTodoInput.value = "";
-            }
+  handleAddTodo = () => {
+    const { todos } = this.state;
+    const newTodoInput = document.getElementById("todo-input");
+    if (newTodoInput.value) {
+      let newTodos = [...todos, { id: newTodoId, text: newTodoInput.value }];
+      newTodoId++;
+      this.setState(() => ({ todos: newTodos }));
+    }
+    newTodoInput.value = "";
+  }
+
+  render () {
+    const { todos } = this.state;
+    return Widget("div", {
+      className: "todo-container",
+      children: [
+        Widget("h3", {
+          children: "Todo App"
+        }),
+        Widget("small", { children: "Manage Your Todos :)"}),
+        Widget("hr"),
+        Widget("div", {
+          className: "todo-form",
+          children: [
+            Widget("input", {
+              id: "todo-input",
+              autoComplete: "off",
+            }),
+            Widget("button", {
+              children: "Add new Todo",
+              onclick: this.handleAddTodo
+            })
+          ]
+        }),
+        Widget("ol", {
+          children: todos.map(todo => {
+            return new Todo({
+              todo,
+              updateTodo: this.updateTodo,
+              handleDeleteTodo: this.handleDeleteTodo,
+              onEditToggle: this.onEditToggle
+            });
           })
-        ]
-      }),
-      Widget("ol", {
-        children: todos.map(todo => Todo({ todo, updateTodo, handleDeleteTodo, onEditToggle }))
-      })
-    ]
-  });
+        }),
+      ]
+    });
+  }
 }
 
-function renderTodoApp(){
-  const app = TodoAppV2();
-  const el = document.getElementById("app");
-  render(app, el);
-}
-
-
-renderTodoApp();
+const app = new TodoAppV2();
+const el = document.getElementById("app");
+render(app, el);

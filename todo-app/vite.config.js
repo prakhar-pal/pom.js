@@ -1,7 +1,6 @@
 import path from "path";
 import { defineConfig } from "vite";
 export default defineConfig(config => {
-    console.log("vite config:", config);
     return {
         resolve: {
             alias: config.mode === "development" ? {
