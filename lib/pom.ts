@@ -1,5 +1,5 @@
 import isEqual from 'lodash.isequal';
-import { IMemDOM, GenericObject, IPomElement } from "./types";
+import { IMemDOM, GenericObject, IPomElement, StateCbFn, IComponent } from "./types";
 
 
 class StateEventBus {
@@ -27,17 +27,29 @@ const isVDOMObj = (obj: IPomElement[]) =>
     obj && Array.isArray(obj) &&
     obj.every(o => o && (typeof o === "string" || (o as GenericObject).type)); // @todo - remove as
 
+function componentToVdom(component: IPomElement | typeof Component): IMemDOM[] {
+    let result: IMemDOM[] = [];
+    if (component instanceof Component) {
+        let _result = component.render();
+        if (!_result) return null;
+        else if (Array.isArray(_result)) {
+            result = _result.map(r => componentToVdom(r)).flat(1);
+        }
+        // cases such as if(typeof _result !== "string")
+        result = [_result];
+    } else {
+        const pomElement = component as IPomElement;
+        return Array.isArray(pomElement) ? pomElement : [pomElement];
+    }
+    return result;
+}
+
 function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IMemDOM[]): IMemDOM[] {
     let newDOM: IMemDOM[] = [];
     const traversedVDOM = prevDOM.map(() => false);
-    if (component instanceof Component) {
-        let _result = component.render();
-        let result: IMemDOM[] = [];
-        if (!_result) return null;
-        else if (!Array.isArray(_result) && typeof _result !== "string") result = [_result];
-        return doRenderLoop(result, target, prevDOM);
-    } else if (component && isVDOMObj(component as IMemDOM[])) { // @todo - remove as
-        (component as IMemDOM[]).forEach((componentInstance, index) => { // @todo - remove as
+    const vdoms = Array.isArray(component) ? component.map(c => componentToVdom(c)).flat(1): componentToVdom(component);
+    if (vdoms && isVDOMObj(vdoms)) {
+        vdoms.forEach((vdom, index) => {
             const addElement = (instance: IMemDOM, index: number) => {
                 let el = instance?.el,
                     isNew = false;
@@ -52,27 +64,27 @@ function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IM
             }
             if (prevDOM && prevDOM[index]) {
                 traversedVDOM[index] = true;
-                const oldComponentInstance = prevDOM[index];
-                if (oldComponentInstance && componentInstance) {
+                const oldVdom = prevDOM[index];
+                if (oldVdom && vdom) {
                     let el = prevDOM[index]?.el;
-                    if(oldComponentInstance.key === componentInstance.key) {
+                    if(oldVdom.key === vdom.key) {
                         // same component
-                        if(prevDOM[index]?.el && !isEqual(prevDOM[index].props, componentInstance.props)){
-                            updateAttrs(prevDOM?.[index]?.el, componentInstance.props);
+                        if(prevDOM[index]?.el && !isEqual(prevDOM[index].props, vdom.props)){
+                            updateAttrs(prevDOM?.[index]?.el, vdom.props);
                         }
-                        addElement({ el: oldComponentInstance?.el, ...componentInstance }, index);
+                        addElement({ el: oldVdom?.el, ...vdom }, index);
                     } else {
-                        oldComponentInstance?.el && target.removeChild(oldComponentInstance?.el);
-                        el = addElement(componentInstance, index);
+                        oldVdom?.el && target.removeChild(oldVdom?.el);
+                        el = addElement(vdom, index);
                     }
                 } else {
-                    if(oldComponentInstance?.el) {
-                        target.removeChild(oldComponentInstance.el);
+                    if(oldVdom?.el) {
+                        target.removeChild(oldVdom.el);
                     }
-                    addElement(componentInstance, index);
+                    addElement(vdom, index);
                 }
             } else {
-                addElement(componentInstance, index);
+                addElement(vdom, index);
             }
         });
 
@@ -125,18 +137,13 @@ function updateAttrs(element?: HTMLElement, attrs: GenericObject = {}) {
     }
 }
 
-type StateCbFn<T> = (state: T) => T;
-
-interface IComponent {
-    render: () => IPomElement;
-}
 export class Component<T> implements IComponent {
     state: T;
     setState = (cb: StateCbFn<T>) => {
         this.state = cb(this.state);
         stateEventBus.stateUpdated();
     }
-    render(): IPomElement {
+    render(): IMemDOM {
         return Widget('', { });
     }
 }

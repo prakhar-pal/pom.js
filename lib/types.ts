@@ -17,3 +17,11 @@ export interface IWidgetProps extends GenericObject {
 }
 
 export type IPomElement = IMemDOM | IMemDOM[];
+
+
+export type StateCbFn<T> = (state: T) => T;
+
+export interface IComponent {
+    render: () => IPomElement;
+}
+
