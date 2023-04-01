@@ -33,15 +33,25 @@ class Todo extends Component {
 
     render () {
         const { todo, updateTodo, handleDeleteTodo } = this.props;
-        const { updatedTodo } = this.state;
-        const el = todo.isEdit ? Widget("input", {
-            value: updatedTodo,
-            oninput: this.onChangeTodo,
-            onkeydown: event => {
-                if(event.keyCode === 13){
-                    updateTodo(todo.id, event.target.value);
-                }
-            }
+        const el = todo.isEdit ? Widget("form", {
+            className: "inline",
+            onsubmit: event => updateTodo(todo.id, event.target.todoUpdated.value),
+            children: [
+                Widget("input", {
+                    name: "todoUpdated",
+                    defaultValue: todo.text,
+                    oninput: this.onChangeTodo,
+                    onkeydown: event => {
+                        if(event.keyCode === 13){
+                            updateTodo(todo.id, event.target.value);
+                        }
+                    }
+                }),
+                Widget("button", {
+                    type: "submit",
+                    innerText: "Update"
+                })
+            ]
         }): Widget("span", { children: todo.text });
 
         const w = Widget("li", {
@@ -51,11 +61,10 @@ class Todo extends Component {
                     children: "Delete",
                     onclick: () => handleDeleteTodo(todo.id)
                 }),
-                Widget("button", {
-                    children: todo.isEdit ? "Update": "Edit",
-                    onclick: this.handleUpdateOrEdit
-                })
-            ]
+            ].concat(!todo.isEdit ? [Widget("button", {
+                children: "Edit",
+                onclick: this.handleUpdateOrEdit
+            })]: [])
         });
         return w;
     }

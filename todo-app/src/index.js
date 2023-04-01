@@ -41,7 +41,8 @@ class TodoAppV2 extends Component{
     this.setState(() => ({ todos: newTodos }));
   }
 
-  handleAddTodo = () => {
+  handleAddTodo = event => {
+    event?.preventDefault?.();
     const { todos } = this.state;
     const newTodoInput = document.getElementById("todo-input");
     if (newTodoInput.value) {
@@ -62,7 +63,8 @@ class TodoAppV2 extends Component{
         }),
         Widget("small", { children: "Manage Your Todos :)"}),
         Widget("hr"),
-        Widget("div", {
+        Widget("form", {
+          onsubmit: this.handleAddTodo,
           className: "todo-form",
           children: [
             Widget("input", {
