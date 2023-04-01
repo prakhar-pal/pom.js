@@ -27,16 +27,16 @@ const isVDOMObj = (obj: IPomElement[]) =>
     obj && Array.isArray(obj) &&
     obj.every(o => o && (typeof o === "string" || (o as GenericObject).type)); // @todo - remove as
 
-function componentToVdom(component: IPomElement | typeof Component): IMemDOM[] {
+function componentToVdom(component: IPomElement | typeof Component, oldVdom: IMemDOM[] = []): IMemDOM[] {
     let result: IMemDOM[] = [];
-    if (component instanceof Component) {
-        let _result = component.render();
+    if (component instanceof Component || (Array.isArray(component) && component.every(c => c instanceof Component))) {
+        let _result = component instanceof Component ? component.render(): [] as IMemDOM[];
         if (!_result) return null;
         else if (Array.isArray(_result)) {
             result = _result.map(r => componentToVdom(r)).flat(1);
         }
         // cases such as if(typeof _result !== "string")
-        result = [_result];
+        result = Array.isArray(_result) ? _result : [_result];
     } else {
         const pomElement = component as IPomElement;
         return Array.isArray(pomElement) ? pomElement : [pomElement];
@@ -44,7 +44,7 @@ function componentToVdom(component: IPomElement | typeof Component): IMemDOM[] {
     return result;
 }
 
-function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IMemDOM[]): IMemDOM[] {
+function doRenderLoop(component: IPomElement, target: HTMLElement, prevDOM: IMemDOM[]): IMemDOM[] {
     let newDOM: IMemDOM[] = [];
     const traversedVDOM = prevDOM.map(() => false);
     const vdoms = Array.isArray(component) ? component.map(c => componentToVdom(c)).flat(1): componentToVdom(component);
@@ -101,7 +101,7 @@ function doRenderLoop(component: IPomElement[], target: HTMLElement, prevDOM: IM
     return newDOM;
 }
 
-export function render(element: IPomElement[], target: HTMLElement) {
+export function render(element: IPomElement, target: HTMLElement) {
     let oldDOM: IMemDOM[] = [];
    
     const updateVDOM = () => {
