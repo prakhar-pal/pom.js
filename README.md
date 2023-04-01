@@ -8,3 +8,6 @@ A declarative UI library to write JavaScript apps.
 - [x] State Management
 - [ ] Create Todoist clone using these utils
 
+# Hurdles
+- [] components using `Component` class lose their internal state on re-renders
+- [] supporting returns of multiple root elements from `Component` is resulting in complicated code, TS types
