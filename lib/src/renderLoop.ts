@@ -27,7 +27,7 @@ function updateAttrs(element?: HTMLElement, attrs: GenericObject = {}) {
 }
 
 const isVDOMObj = (obj: IMemDOM) => {
-    const validVDOM = (o: IMemDOM) => (typeof o === "string" || (o as GenericObject).type);  // @todo - remove as
+    const validVDOM = (o: IMemDOM) => (typeof o === "string" || o.type);
     if(!obj) return false;
     else if(Array.isArray(obj)) {
         return obj.every(o => o && validVDOM(o));
@@ -53,6 +53,24 @@ function componentToVdom(component: IMemDOM | typeof Component): IMemDOM[] {
     return result;
 }
 
+const addElement = ({ instance, index, newDOM, prevDOM, target }: {
+    instance: IMemDOM;
+    index: number;
+    newDOM: IMemDOM[];
+    prevDOM: IMemDOM[];
+    target: HTMLElement;
+}) => {
+    let el = instance?.el,
+        isNew = false;
+    if(!el) {
+        isNew = true;
+        el = createElement(instance.type, instance.props);
+        target.appendChild(el);
+    }
+    let children = instance.props?.children ? doRenderLoop(instance.props?.children, el, isNew ? [] : prevDOM?.[index]?.props?.children || []) : null;
+    newDOM[index] = { ...instance, props: {...instance.props, children}, el } // as IMemDOM; // @todo - remove as
+    return el;
+}
 
 function doRenderLoop(component: IMemDOM, target: HTMLElement, prevDOM: IMemDOM[]): IMemDOM[] {
     let newDOM: IMemDOM[] = [];
@@ -60,18 +78,6 @@ function doRenderLoop(component: IMemDOM, target: HTMLElement, prevDOM: IMemDOM[
     const vdoms = Array.isArray(component) ? component.map(c => componentToVdom(c)).flat(1): componentToVdom(component);
     if (vdoms && vdoms.every(vdom => isVDOMObj(vdom))) {
         vdoms.forEach((vdom, index) => {
-            const addElement = (instance: IMemDOM, index: number) => {
-                let el = instance?.el,
-                    isNew = false;
-                if(!el) {
-                    isNew = true;
-                    el = createElement(instance.type, instance.props);
-                    target.appendChild(el);
-                }
-                let children = instance.props?.children ? doRenderLoop(instance.props?.children, el, isNew ? [] : prevDOM?.[index]?.props?.children || []) : null;
-                newDOM[index] = { ...instance, props: {...instance.props, children}, el } // as IMemDOM; // @todo - remove as
-                return el;
-            }
             if (prevDOM && prevDOM[index]) {
                 traversedVDOM[index] = true;
                 const oldVdom = prevDOM[index];
@@ -82,19 +88,43 @@ function doRenderLoop(component: IMemDOM, target: HTMLElement, prevDOM: IMemDOM[
                         if(prevDOM[index]?.el && !isEqual(prevDOM[index].props, vdom.props)){
                             updateAttrs(prevDOM?.[index]?.el, vdom.props);
                         }
-                        addElement({ el: oldVdom?.el, ...vdom }, index);
+                        addElement({
+                            instance: { el: oldVdom?.el, ...vdom },
+                            prevDOM,
+                            newDOM,
+                            index,
+                            target
+                        });
                     } else {
                         oldVdom?.el && target.removeChild(oldVdom?.el);
-                        el = addElement(vdom, index);
+                        el = addElement({
+                            instance: vdom,
+                            prevDOM,
+                            newDOM,
+                            index,
+                            target
+                        });
                     }
                 } else {
                     if(oldVdom?.el) {
                         target.removeChild(oldVdom.el);
                     }
-                    addElement(vdom, index);
+                    addElement({
+                        instance: vdom,
+                        prevDOM,
+                        newDOM,
+                        index,
+                        target
+                    });
                 }
             } else {
-                addElement(vdom, index);
+                addElement({
+                    instance: vdom,
+                    prevDOM,
+                    newDOM,
+                    index,
+                    target
+                });
             }
         });
 
