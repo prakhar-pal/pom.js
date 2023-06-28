@@ -1,33 +1,37 @@
+import Component from "./Component";
+import { IPomElement, IMemDOM, GenericObject } from "./types";
 import isEqual from 'lodash.isequal';
-import { IMemDOM, GenericObject, IPomElement, StateCbFn, IComponent } from "./types";
 
 
-class StateEventBus {
-    listeners: Function[] = [];
-    addChangeHandler(fn: Function) {
-        this.listeners.push(fn);
+/**
+ *
+ * @param {String} type - type of widget
+ * @param {Object} props - props for the widget
+ * @returns {HTMLElement}
+ */
+export function createElement(type: string, props: GenericObject = {}): HTMLElement {
+    const el = document.createElement(type);
+    updateAttrs(el, props);
+    return el;
+}
+
+function updateAttrs(element?: HTMLElement, attrs: GenericObject = {}) {
+    if(!element) return;
+    const { children, ...restProps } = attrs;
+    if (typeof children === "string") {
+        element.innerHTML = children;
     }
-    removeChangeHandler(fn: Function) {
-        this.listeners = this.listeners.filter(listener => listener !== fn);
-    }
-    stateUpdated() {
-        this.listeners.forEach(fn => fn());
+    for (let [key, value] of Object.entries(restProps)) {
+        // @ts-ignore
+        element[key] = value;
     }
 }
 
-const stateEventBus = new StateEventBus();
-
-export function Widget(type: string, props: GenericObject = {}): IMemDOM {
-    const { key = null, ...restProps } = props;
-    return { type, props: restProps, key: key || type };
-}
-
-
-const isVDOMObj = (obj: IPomElement[]) => 
+const isVDOMObj = (obj: IPomElement) => 
     obj && Array.isArray(obj) &&
     obj.every(o => o && (typeof o === "string" || (o as GenericObject).type)); // @todo - remove as
 
-function componentToVdom(component: IPomElement | typeof Component, oldVdom: IMemDOM[] = []): IMemDOM[] {
+function componentToVdom(component: IPomElement | typeof Component): IMemDOM[] {
     let result: IMemDOM[] = [];
     if (component instanceof Component || (Array.isArray(component) && component.every(c => c instanceof Component))) {
         let _result = component instanceof Component ? component.render(): [] as IMemDOM[];
@@ -43,6 +47,7 @@ function componentToVdom(component: IPomElement | typeof Component, oldVdom: IMe
     }
     return result;
 }
+
 
 function doRenderLoop(component: IPomElement, target: HTMLElement, prevDOM: IMemDOM[]): IMemDOM[] {
     let newDOM: IMemDOM[] = [];
@@ -101,50 +106,4 @@ function doRenderLoop(component: IPomElement, target: HTMLElement, prevDOM: IMem
     return newDOM;
 }
 
-export function render(element: IPomElement, target: HTMLElement) {
-    let oldDOM: IMemDOM[] = [];
-   
-    const updateVDOM = () => {
-        const newDOM = doRenderLoop(element, target, oldDOM);
-        oldDOM = newDOM;
-    }
-    stateEventBus.addChangeHandler(updateVDOM);
-    stateEventBus.stateUpdated();
-}
-
-
-/**
- *
- * @param {String} type - type of widget
- * @param {Object} props - props for the widget
- * @returns {HTMLElement}
- */
-export function createElement(type: string, props: GenericObject = {}): HTMLElement {
-    const el = document.createElement(type);
-    updateAttrs(el, props);
-    return el;
-}
-
-function updateAttrs(element?: HTMLElement, attrs: GenericObject = {}) {
-    if(!element) return;
-    const { children, ...restProps } = attrs;
-    if (typeof children === "string") {
-        element.innerHTML = children;
-    }
-    for (let [key, value] of Object.entries(restProps)) {
-        // @ts-ignore
-        element[key] = value;
-    }
-}
-
-export class Component<T> implements IComponent {
-    state: T;
-    setState = (cb: StateCbFn<T>) => {
-        this.state = cb(this.state);
-        stateEventBus.stateUpdated();
-    }
-    render(): IMemDOM {
-        return Widget('', { });
-    }
-}
-
+export default doRenderLoop;
