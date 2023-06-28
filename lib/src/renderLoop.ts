@@ -1,7 +1,6 @@
 import Component from "./Component";
-import { IPomElement, IMemDOM, GenericObject } from "./types";
+import { IMemDOM, GenericObject } from "./types";
 import isEqual from 'lodash.isequal';
-
 
 /**
  *
@@ -27,33 +26,39 @@ function updateAttrs(element?: HTMLElement, attrs: GenericObject = {}) {
     }
 }
 
-const isVDOMObj = (obj: IPomElement) => 
-    obj && Array.isArray(obj) &&
-    obj.every(o => o && (typeof o === "string" || (o as GenericObject).type)); // @todo - remove as
+const isVDOMObj = (obj: IMemDOM) => {
+    const validVDOM = (o: IMemDOM) => (typeof o === "string" || (o as GenericObject).type);  // @todo - remove as
+    if(!obj) return false;
+    else if(Array.isArray(obj)) {
+        return obj.every(o => o && validVDOM(o));
+    }else {
+        return validVDOM(obj);
+    }    
+}
 
-function componentToVdom(component: IPomElement | typeof Component): IMemDOM[] {
+function componentToVdom(component: IMemDOM | typeof Component): IMemDOM[] {
     let result: IMemDOM[] = [];
-    if (component instanceof Component || (Array.isArray(component) && component.every(c => c instanceof Component))) {
-        let _result = component instanceof Component ? component.render(): [] as IMemDOM[];
+    if (component instanceof Component) {
+        let _result = component.render();
         if (!_result) return null;
-        else if (Array.isArray(_result)) {
-            result = _result.map(r => componentToVdom(r)).flat(1);
-        }
-        // cases such as if(typeof _result !== "string")
         result = Array.isArray(_result) ? _result : [_result];
     } else {
-        const pomElement = component as IPomElement;
-        return Array.isArray(pomElement) ? pomElement : [pomElement];
+        if (component instanceof Component) {
+            const widgetTree = component.render();
+            result = [widgetTree];
+        } else {
+            result = [component as IMemDOM];
+        }
     }
     return result;
 }
 
 
-function doRenderLoop(component: IPomElement, target: HTMLElement, prevDOM: IMemDOM[]): IMemDOM[] {
+function doRenderLoop(component: IMemDOM, target: HTMLElement, prevDOM: IMemDOM[]): IMemDOM[] {
     let newDOM: IMemDOM[] = [];
     const traversedVDOM = prevDOM.map(() => false);
     const vdoms = Array.isArray(component) ? component.map(c => componentToVdom(c)).flat(1): componentToVdom(component);
-    if (vdoms && isVDOMObj(vdoms)) {
+    if (vdoms && vdoms.every(vdom => isVDOMObj(vdom))) {
         vdoms.forEach((vdom, index) => {
             const addElement = (instance: IMemDOM, index: number) => {
                 let el = instance?.el,

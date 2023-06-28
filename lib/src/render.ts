@@ -1,8 +1,8 @@
-import { IMemDOM, GenericObject, IPomElement } from "./types";
+import { IMemDOM } from "./types";
 import { stateEventBus } from "./eventBus";
 import doRenderLoop from "./renderLoop";
 
-export function render(element: IPomElement, target: HTMLElement) {
+export function render(element: IMemDOM, target: HTMLElement) {
     let oldDOM: IMemDOM[] = [];
    
     const updateVDOM = () => {
@@ -12,4 +12,3 @@ export function render(element: IPomElement, target: HTMLElement) {
     stateEventBus.addChangeHandler(updateVDOM);
     stateEventBus.stateUpdated();
 }
-
