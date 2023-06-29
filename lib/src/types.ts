@@ -1,6 +1,6 @@
 export type ITagName = string;
 
-export type IMemDOM = null | GenericObject & {
+export interface IMemDOM extends GenericObject {
     key: string | number ;
     type: ITagName;
     props: any;
@@ -16,12 +16,10 @@ export interface IWidgetProps extends GenericObject {
     className?: string;
 }
 
-export type IPomElement = IMemDOM | IMemDOM[];
-
 
 export type StateCbFn<T> = (state: T) => T;
 
 export interface IComponent {
-    render: () => IPomElement;
+    render: () => IMemDOM;
 }
 

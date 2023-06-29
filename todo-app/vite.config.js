@@ -4,7 +4,7 @@ export default defineConfig(config => {
     return {
         resolve: {
             alias: config.mode === "development" ? {
-                "@lawki/pom.js" : path.join(__dirname, '../lib/pom.ts')
+                "@lawki/pom.js" : path.join(__dirname, '../lib/index.ts')
             } : null
         }
     };

@@ -1,13 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   font-family: sans-serif;
   background-color: rgb(0,0,0,0.1);
+  @apply bg-blue-500;
 }
 
 .todo-container {
   max-width: 600px;
   margin: 1rem auto;
   .todo-form {
-    display: flex;
+    @apply flex;
     input {
       margin-right: 1rem;
     }
@@ -23,5 +28,6 @@ body {
   }
   ol > li > * {
     margin-right: 0.5rem;
+    @apply mr-2;
   }
 }
